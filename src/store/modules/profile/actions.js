@@ -1,20 +1,32 @@
-import { URL, GENERAL } from '@/constants';
+import router from '@/router';
+import { URL, GENERAL, MUTATIONS } from '@/constants';
 
 export default {
-  async login(_context, source) {
+  async login({ commit }, source) {
     switch (source) {
       case GENERAL.AUTH_SOURCES.GOOGLE: {
         window.open(URL.BACKEND('/auth/google', 'auth_google'));
+        break;
+      }
+      case GENERAL.AUTH_SOURCES.LINKEDIN: {
+        window.open(URL.BACKEND('/auth/linkedin', 'auth_linkedin'));
+        break;
       }
     }
 
-    const receiveMessage = ({ data, origin }) => {
-      if (origin !== URL.BACKEND_ORIGIN) {
-        return;
-      }
+    await new Promise(resolve => {
+      const receiveMessage = ({ data, origin }) => {
+        if (origin !== URL.BACKEND_ORIGIN) {
+          return;
+        }
+        
+        commit(MUTATIONS.SET_PROFILE, data);
 
-      console.log(data);
-    }
-    window.addEventListener('message', receiveMessage, false);
+        resolve();
+      }
+      window.addEventListener('message', receiveMessage, false);
+    });
+
+    router.push('app');
   }
 };

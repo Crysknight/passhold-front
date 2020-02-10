@@ -27,7 +27,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, _from, next) => {
-  if (!store.getters['profile/loggedIn'] && to.name !== 'login') {
+  if (!store.getters['profile/isLoggedIn'] && to.name !== 'login') {
     next('login');
   } else {
     next();
